@@ -130,3 +130,4 @@ python3 manage.py createsuperuser
 # Run development server
 python3 manage.py runserver
 ```
+# AI_RESUME-APP

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-center">
+            <h1 class="display-4 mb-4">Job Matching System</h1>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Welcome to Your Career Companion</h2>
+                    <p class="card-text">
+                        Discover personalized job opportunities that match your skills and experience.
+                    </p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <a href="{% url 'job_list' %}" class="btn btn-primary btn-lg btn-block">
+                                Browse Jobs
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{% url 'resume_upload' %}" class="btn btn-success btn-lg btn-block">
+                                Upload Resume
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Smart Matching</h5>
+                            <p class="card-text">
+                                Our AI-powered system matches your skills with the best job opportunities.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Resume Analysis</h5>
+                            <p class="card-text">
+                                Get insights into your resume and improve your job matching potential.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Personalized Recommendations</h5>
+                            <p class="card-text">
+                                Receive job recommendations tailored to your unique skills and experience.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

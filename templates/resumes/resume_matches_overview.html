@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>All Resumes Job Matches Overview</h2>
+<!-- <p>{{all_resume_matches}}</p> -->
+    {% if all_resume_matches %}
+        {% for resume_data in all_resume_matches %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4>Resume: {{ resume_data.resume.file.name }}</h4>
+                    <small>Uploaded: {{ resume_data.resume.uploaded_at|date:"F d, Y" }}</small>
+                </div>
+                <div class="card-body">
+                    {% if resume_data.matches %}
+                        <div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Job Title</th>
+                <th>Match Score</th>
+                <th>Matched Skills</th>
+                <th>Actions</th>
+                <th>Recommendation</th> <!-- Updated Recommendation Column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for match in resume_data.matches %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ match.job.title }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="progress flex-grow-1" style="height: 20px;">
+                                <div class="progress-bar {% if match.similarity_score >= 70 %}bg-success{% elif match.similarity_score >= 40 %}bg-warning{% else %}bg-danger{% endif %}"
+                                     role="progressbar"
+                                     style="width: {{ match.similarity_score|floatformat:2 }}%"
+                                     aria-valuenow="{{ match.similarity_score|floatformat:2}}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    {{ match.similarity_score|floatformat:2}}%
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% for skill in match.matched_skills %}
+                            <span class="badge bg-info me-1">{{ skill }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{% url 'job_detail' match.job.id %}"
+                               class="btn btn-sm btn-primary">
+                                View Job
+                            </a>
+                            <a href="{% url 'resume_analysis' resume_data.resume.id %}"
+                               class="btn btn-sm btn-secondary">
+                                Resume Details
+                            </a>
+                        </div>
+                    </td>
+                    <td> <!-- Recommendation Column -->
+                        {% if match.similarity_score > 50 %}
+                            <span class="text-success">This candidate ranks very high. Would be a good fit for the job.</span>
+                        {% elif match.similarity_score > 40 %}
+                            <span class="text-primary">High skill match. Candidate can also be fit for the job.</span>
+                        {% elif match.similarity_score >= 20 %}
+                            <span class="text-warning">Average match.</span>
+                        {% elif match.similarity_score >= 10 %}
+                            <span class="text-info">Slightly above average candidate.</span>
+                        {% else %}
+                            <span class="text-danger">Candidate ranks very low. Few skills match.</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+                    {% else %}
+                        <div class="alert alert-info">
+                            No matching jobs found for this resume.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning">
+            No resumes found. Please upload a resume first.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

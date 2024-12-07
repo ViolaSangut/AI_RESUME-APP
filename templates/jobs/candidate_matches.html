@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4">Candidate Matches for Job: {{ job.title }}</h2>
+
+            {% if matches %}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-4">Candidate</div>
+                            <div class="col-md-3">Match Score</div>
+                            <div class="col-md-3">Success Probability</div>
+                            <div class="col-md-2">Actions</div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                {% for match in matches %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if match.candidate.profile_picture %}
+                                                    <img src="{{ match.candidate.profile_picture.url }}"
+                                                         class="rounded-circle me-3"
+                                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                                {% else %}
+                                                    <img src="https://via.placeholder.com/50"
+                                                         class="rounded-circle me-3"
+                                                         style="width: 50px; height: 50px;">
+                                                {% endif %}
+                                                <div>
+                                                    <strong>{{ match.candidate.get_full_name }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ match.candidate.email }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar
+                                                    {% if match.match_score >= 80 %}bg-success
+                                                    {% elif match.match_score >= 60 %}bg-warning
+                                                    {% else %}bg-danger
+                                                    {% endif %}"
+                                                    role="progressbar"
+                                                    style="width: {{ match.match_score }}%;"
+                                                    aria-valuenow="{{ match.match_score }}"
+                                                    aria-valuemin="0"
+                                                    aria-valuemax="100">
+                                                    {{ match.match_score }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge
+                                                {% if match.match_score >= 80 %}bg-success
+                                                {% elif match.match_score >= 60 %}bg-warning
+                                                {% else %}bg-danger
+                                                {% endif %}">
+                                                {{ match.match_score }}%
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'candidate_detail' match.candidate.id %}"
+                                                   class="btn btn-sm btn-info">
+                                                    View Profile
+                                                </a>
+                                                <button class="btn btn-sm btn-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#matchDetailsModal{{ match.candidate.id }}">
+                                                    Details
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Match Details Modal -->
+                                    <div class="modal fade" id="matchDetailsModal{{ match.candidate.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Detailed Match Analysis</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h6>Skills Match</h6>
+                                                            <ul class="list-group">
+                                                                {% for skill, score in match.detailed_analysis.skills_match.items %}
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                        {{ skill }}
+                                                                        <span class="badge
+                                                                            {% if score >= 80 %}bg-success
+                                                                            {% elif score >= 60 %}bg-warning
+                                                                            {% else %}bg-danger
+                                                                            {% endif %}">
+                                                                            {{ score }}%
+                                                                        </span>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6>Experience Analysis</h6>
+                                                            <div class="card">
+                                                                <div class="card-body">
+                                                                    <p><strong>Years of Experience:</strong> {{ match.candidate.years_of_experience }}</p>
+                                                                    <p><strong>Relevant Experience:</strong> {{ match.detailed_analysis.experience_match }}%</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <a href="{% url 'candidate_detail' match.candidate.id %}" class="btn btn-primary">Full Profile</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No matching candidates found for this job posting.
+                </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{% url 'job_detail' job.id %}" class="btn btn-secondary">Back to Job Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Optional: Add sorting functionality
+        const table = document.querySelector('.table');
+        const headers = table.querySelectorAll('th');
+
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const tableBody = table.querySelector('tbody');
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+
+                const sortedRows = rows.sort((a, b) => {
+                    const aColText = a.querySelector('td').textContent.trim();
+                    const bColText = b.querySelector('td').textContent.trim();
+                    return aColText.localeCompare(bColText);
+                });
+
+                tableBody.innerHTML = '';
+                sortedRows.forEach(row => tableBody.appendChild(row));
+            });
+        });
+    });
+</script>
+{% endblock %}

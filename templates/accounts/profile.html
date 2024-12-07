@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h2>Profile</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" class="img-fluid rounded-circle mb-3" alt="Profile Picture">
+                        {% else %}
+                            <img src="https://via.placeholder.com/150" class="img-fluid rounded-circle mb-3" alt="Default Profile">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h3>{{ user.get_full_name|default:user.username }}</h3>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>User Type:</strong> {{ user.get_user_type_display }}</p>
+                        <p><strong>Phone:</strong> {{ user.phone_number|default:'Not provided' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

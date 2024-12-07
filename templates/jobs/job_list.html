@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h2 class="mb-4">Available Jobs</h2>
+        {% for job in jobs %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ job.title }}</h5>
+                    <p class="card-text">{{ job.description|truncatewords:30 }}</p>
+                    <div class="d-flex justify-content-between">
+                        <span>
+                            <strong>Experience:</strong> {{ job.min_experience }} years
+                        </span>
+                        <a href="{% url 'job_detail' job.id %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="alert alert-info">No jobs available at the moment.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
